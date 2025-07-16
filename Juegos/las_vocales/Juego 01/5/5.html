@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rompecabezas</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            display: none; /* Ocultar el rompecabezas al inicio */
+            max-width: 800px;
+            margin: 0 auto;
+            border: 2px solid #333;
+        }
+
+        #puzzle {
+            display: flex;
+            flex-wrap: wrap;
+            width: 320px; /* Ajustar según el tamañodela imagen*/
+            height: 320px; /* Ajustar según el tamañodela imagen*/
+            margin: 0 auto;
+        }
+
+        .piece {
+            width: 80px; /* Ajustar según el tamañodela imageny el número de piezas */
+            height: 80px; /* Ajustar según el tamañodela imageny el número de piezas */
+            background-size: 320px 320px; /* Ajustarsegún el tamaño de la imagen */
+            cursor: pointer;
+            box-sizing: border-box;
+            border: 1px solid #333;
+        }
+
+        .empty {
+            background: none;
+            border: none;
+        }
+
+        #panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #lista-palabras {
+            margin-top: 10px;
+        }
+
+        #lista-palabras ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #lista-palabras ul li {
+            margin-bottom: 5px;
+        }
+
+        #username {
+            margin-bottom: 10px;
+        }
+
+        #start-button-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        #start-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .title-cell {
+            background-color: #f2f2f2;
+        }
+
+        .found-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #8ec6e6;
+            color: black;
+            padding: 20px;
+            border: 2px solid #333;
+            font-size: 24px;
+            z-index: 9999;
+            text-align: center;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .disable-clicks {
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="start-button-container">
+        <button id="start-button">INICIAR ROMPECABEZAS</button>
+    </div>
+
+    <div class="container">
+<table>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+  }
+     #align-top-left {
+        vertical-align: top; /* Alineación vertical arriba */
+        text-align: left; /* Alineación horizontal izquierda */
+    
+       
+    }
+</style>
+  <tr>
+
+            <center>
+                <td colspan="2"><b> ROMPECABEZAS</b><BR>
+LAS VOCALES</center>
+            </td>
+</tr>
+
+
+
+<td>
+        <div id="puzzle"></div>
+</td>
+<td id="align-top-left">
+        <div id="panel">
+            <div>
+                <div id="actualUsername"></div>
+                <div id="reloj">Tiempo: 00:00</div>
+                <div id="intentos"></div>
+                <div id="puntaje">Puntaje: 100</div>
+            </div>
+        </div>
+</td>
+    </div>
+    
+    <audio id="background-music" loop>
+        <source src="Sound/Cipher.mp3" type="audio/mpeg">
+        Tu navegador no soporta la reproducción de audio.
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>

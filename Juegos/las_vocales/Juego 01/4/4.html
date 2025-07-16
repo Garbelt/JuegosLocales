@@ -1,0 +1,380 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rompecabezas con desbloqueo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      border: 2px solid #333;
+    }
+
+    #bloqueoInicial {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #bloqueoInicial > div {
+      width: 400px;
+      height: 300px;
+      background: url('image/AccesoBloqueado.jpg') no-repeat center center;
+      background-size: cover;
+      border-radius: 8px;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      color: white;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    #unlockModal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #unlockContent {
+      width: 400px;
+      height: 300px;
+      background: url('image/fondoModal.jpg') no-repeat center center;
+      background-size: cover;
+      border-radius: 8px;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      color: black;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #pointerHint {
+      display: none;
+      position: absolute;
+      width: 25px;
+      top: 115px;
+      left: 250px;
+      z-index: 2000;
+      animation: handBounce 1s infinite;
+    }
+
+    @keyframes handBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    input {
+      width: 80px;
+      font-size: 22px;
+      text-align: center;
+      text-transform: uppercase;
+      padding: 5px;
+    }
+
+    .controls {
+      margin: 10px 0;
+    }
+
+    .speaker-btn {
+      font-size: 26px;
+      margin-left: 10px;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+
+    .speaker-btn:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    #verifyBtn {
+      font-size: 14px;
+      margin-top: 10px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    #verifyBtn:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
+
+    #progressGrid {
+      margin-top: 20px;
+      font-size: 28px;
+    }
+
+    .cell {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin: 5px;
+      line-height: 40px;
+      font-size: 24px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+    }
+
+#message.success {
+  position: fixed;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #D6DBDF;
+  color: black;
+  padding: 20px;
+  border: 2px solid #17202A;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 9999;
+  text-align: center;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#message.NOsuccess {
+  position: fixed;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #D6DBDF;
+  color: black;
+  padding: 20px;
+  border: 2px solid #17202A;
+  font-size: 13px;
+  font-weight: bold;
+  z-index: 9999;
+  text-align: center;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+
+  .disable-clicks {
+    pointer-events: none;
+  }
+
+
+    .disable-clicks {
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="bloqueoInicial">
+  <div id="bloqueoImagen"></div>
+</div>
+
+<div id="unlockModal">
+  <div id="unlockContent">
+    <h2>DESBLOQUEA EL JUEGO</h2>
+    <div class="controls">
+      <input type="text" id="codeInput" maxlength="3" disabled />
+      <button class="speaker-btn" id="speakerBtn" onclick="replayAudio()">🔊</button><br />
+      <button id="verifyBtn" onclick="checkCode()" disabled><b>VERIFICAR</b></button>
+      <img id="pointerHint" src="image/mano.png" alt="Toca el botón de audio" />
+    </div>
+    <div id="progressGrid">
+      <span class="cell" id="cell0">⬜</span>
+      <span class="cell" id="cell1">⬜</span>
+      <span class="cell" id="cell2">⬜</span>
+      <span class="cell" id="cell3">⬜</span>
+      <span class="cell" id="cell4">⬜</span>
+    </div>
+    <div id="message"></div>
+  </div>
+</div>
+
+<script>
+  const vowels = ['A', 'E', 'I', 'O', 'U'];
+  let currentCode = '';
+  let successCount = 0;
+  const totalRequired = 5;
+  let isPlayingAudio = false;
+  let unlocked = false;
+
+  const bloqueoSound = new Audio('sounds/AudioBloqueo.mp3');
+  const correctoSound = new Audio('sounds/correcto.mp3');
+  const errorSound = new Audio('sounds/error.mp3');
+  const accesoSound = new Audio('sounds/accesopermitido.mp3');
+  const hintSound = new Audio('sounds/hint.mp3');
+
+  const bloqueoDiv = document.getElementById('bloqueoInicial');
+  const unlockModal = document.getElementById('unlockModal');
+  const codeInput = document.getElementById('codeInput');
+  const verifyBtn = document.getElementById('verifyBtn');
+  const message = document.getElementById('message');
+
+bloqueoDiv.addEventListener('click', () => {
+  if (unlocked) return;
+  bloqueoSound.play();
+  // Espera 10 segundos antes de mostrar el unlockModal y ocultar bloqueo
+  setTimeout(() => {
+    bloqueoDiv.style.display = 'none'; // <-- MOVIDO AQUÍ
+    unlockModal.style.display = 'flex';
+    successCount = 0;
+    updateProgressGrid();
+    startNewCode();
+  }, 10000);
+});
+
+
+  function generateCode() {
+    let code = '';
+    let availableVowels = [...vowels];
+    for (let i = 0; i < 3; i++) {
+      const idx = Math.floor(Math.random() * availableVowels.length);
+      code += availableVowels[idx];
+      availableVowels.splice(idx, 1);
+    }
+    return code;
+  }
+
+  function setControlsEnabled(enabled) {
+    codeInput.disabled = !enabled;
+    verifyBtn.disabled = !enabled;
+    if (enabled) codeInput.focus();
+  }
+
+  function playAudioSequence(code) {
+    if (isPlayingAudio) return;
+    isPlayingAudio = true;
+    setControlsEnabled(false);
+    const audios = code.split('').map(letter => new Audio(`sounds/${letter}.mp3`));
+    let index = 0;
+    function playNext() {
+      if (index < audios.length) {
+        audios[index].play();
+        audios[index].onended = () => {
+          index++;
+          playNext();
+        };
+      } else {
+        isPlayingAudio = false;
+        setControlsEnabled(true);
+      }
+    }
+    playNext();
+  }
+
+  function startNewCode() {
+    currentCode = generateCode();
+    codeInput.value = '';
+    message.textContent = '';
+    setControlsEnabled(false);
+  }
+
+  function replayAudio() {
+    if (!currentCode) return;
+    playAudioSequence(currentCode);
+  }
+
+  function updateProgressGrid() {
+    for (let i = 0; i < totalRequired; i++) {
+      const cell = document.getElementById(`cell${i}`);
+      cell.textContent = i < successCount ? '✅' : '⬜';
+    }
+  }
+
+  function checkCode() {
+    if (isPlayingAudio) return;
+    const input = codeInput.value.toUpperCase();
+    if (input === currentCode) {
+      correctoSound.play();
+      successCount++;
+      updateProgressGrid();
+      if (successCount >= totalRequired) {
+        setControlsEnabled(false);
+        unlocked = true;
+        setTimeout(() => {
+          message.textContent = '✅ ¡ACCESO PERMITIDO!';
+          message.className = 'success';
+          message.style.color = 'green';
+          accesoSound.play();
+          setTimeout(() => {
+            unlockModal.style.display = 'none';
+            window.location.href = '../5/5.html';
+          }, 2000);
+        }, 2000);
+      } else {
+        message.textContent = '';
+        startNewCode();
+        playAudioSequence(currentCode);
+      }
+    } else {
+      setControlsEnabled(false);
+      errorSound.play();
+      message.textContent = '❌  CLAVE INCORRECTA. INTENTA DE NUEVO.';
+      message.className = 'NOsuccess';
+      message.style.color = 'red';
+      setTimeout(() => {
+        message.textContent = '';
+        message.className = '';
+      }, 3000);
+      codeInput.value = '';
+      errorSound.onended = () => playAudioSequence(currentCode);
+    }
+  }
+
+  codeInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') checkCode();
+  });
+
+  document.getElementById('speakerBtn').addEventListener('click', replayAudio);
+
+  let inactivityTimer;
+  function showPointerHint() {
+    document.getElementById('pointerHint').style.display = 'block';
+    hintSound.currentTime = 0;
+    hintSound.play();
+  }
+
+  function hidePointerHint() {
+    document.getElementById('pointerHint').style.display = 'none';
+  }
+
+  function resetInactivityTimer() {
+    clearTimeout(inactivityTimer);
+    hidePointerHint();
+    inactivityTimer = setTimeout(showPointerHint, 15000);
+  }
+
+  ['click', 'keydown', 'mousemove', 'touchstart'].forEach(event => {
+    document.addEventListener(event, resetInactivityTimer);
+  });
+
+  unlockModal.addEventListener('transitionend', resetInactivityTimer);
+
+</script>
+
+</body>
+</html>

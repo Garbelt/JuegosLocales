@@ -1,0 +1,43 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    border: 2px solid #333;
+    display: inline-block;
+}
+
+.title-cell {
+    background-color: #f2f2f2;
+}
+
+.found-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #8ec6e6;
+    color: black;
+    padding: 20px;
+    border: 2px solid #333;
+    font-size: 24px;
+    z-index: 9999;
+    text-align: center;
+    width: 80%;
+    max-width: 500px;
+}
+
+.disable-clicks {
+    pointer-events: none;
+}
+
+.piece.selected {
+    box-shadow: 0 0 10px 5px rgba(0, 0, 255, 0.5);
+    transform: scale(1.1);
+    z-index: 1;
+}
