@@ -1,0 +1,758 @@
+﻿<!-- Inserta esto en tu archivo principal -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de Alfabetización</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+      border: 2px solid #333;
+    }
+    
+    #panel {
+      text-align: left;
+      font-size: 18px;
+      padding: 10px;
+    }
+
+
+    #start-button-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    #start-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    .found-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #8ec6e6;
+      color: black;
+      padding: 20px;
+      border: 2px solid #333;
+      font-size: 24px;
+      z-index: 9999;
+      text-align: center;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .found-message {
+    pointer-events: auto !important;
+    }
+
+    .disable-clicks {
+      pointer-events: none;
+    }
+
+    .slot-container {
+      width: 100px;
+      height: 100px;
+      overflow: hidden;
+      border: 4px solid #333;
+      background: white;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    .reel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .symbol {
+      width: 100px;
+      height: 100px;
+    }
+
+    .digit {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .botones-letras {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .botones-letras img {
+      width: 60px;
+      height: 60px;
+      cursor: pointer;
+      border: 2px solid #888;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+   .botones-letras.hover-enabled img:hover {
+      transform: scale(1.1);
+    }
+
+    #mensaje {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    #girar-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+#girar-btn.bloqueado-final {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+.found-message.correct {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #d4edda;
+  color: #155724;
+  padding: 20px;
+  border: 2px solid #333;
+  border-radius: 10px;
+  font-size: 24px;
+  text-transform: uppercase;
+  z-index: 9999;
+  text-align: center;
+  width: 90%;
+  max-width: 300px;
+}
+
+.found-message.error {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    font-size: 24px;
+    text-transform: uppercase;
+    z-index: 9999;
+    text-align: center;
+    width: 80%;
+    max-width: 350px;
+}
+
+  </style>
+</head>
+<body>
+  <div id="start-button-container">
+    <button id="start-button">COMENZAR EL JUEGO</button>
+  </div>
+
+  <div class="container">
+    <table>
+      <tr>
+        <td colspan="2" style="text-align: center;">
+          <b>JUGAMOS CON LAS VOCALES</b><br>
+          ¿Con qué letra empiezan las palabras?
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">
+          <div id="game-content">
+            <div>
+              <div class="slot-container">
+                <div class="reel" id="reelImagenes"></div>
+              </div>
+              <div class="slot-container">
+                <div class="reel" id="reelNumeros"></div>
+              </div>
+            </div>
+
+            <button id="girar-btn" onclick="girar()">GIRAR</button>
+
+            <div class="botones-letras">
+               <img src="image/a.jpg" onclick="seleccionarLetra('A')" data-letra="A" />
+               <img src="image/e.jpg" onclick="seleccionarLetra('E')" data-letra="E" />
+               <img src="image/i.jpg" onclick="seleccionarLetra('I')" data-letra="I" />
+               <img src="image/o.jpg" onclick="seleccionarLetra('O')" data-letra="O" />
+               <img src="image/u.jpg" onclick="seleccionarLetra('U')" data-letra="U" />
+            </div>
+
+
+            
+          </div>
+        </td>
+        <td style="vertical-align: top;">
+          <div id="panel">
+            <div id="actualUsername"></div>
+            <div id="reloj">Tiempo: 00:30</div>
+            <div id="puntaje">Puntaje: 0</div>
+            
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <audio id="audio-tiempo-agotado" src="sounds/finportiempo.mp3"></audio>
+  <audio id="audio-error" src="sounds/Error.mp3"></audio>
+  <audio id="audio-correcto" src="sounds/Correcto.mp3"></audio>
+  <audio id="background-music" loop>
+    <source src="sounds/La Rueda del Piano.mp3" type="audio/mpeg" />
+    Tu navegador no soporta la reproducción de audio.
+  </audio>
+
+  <script>
+
+
+    const botonesLetras = document.querySelector('.botones-letras');
+
+    let palabrasOriginales = [
+      { nombre: "ananá", letra: "A", imagen: "figura1.jpg" },
+      { nombre: "estrella", letra: "E", imagen: "figura2.jpg" },
+      { nombre: "isla", letra: "I", imagen: "figura3.jpg" },
+      { nombre: "oso", letra: "O", imagen: "figura4.jpg" },
+      { nombre: "unicornio", letra: "U", imagen: "figura5.jpg" },
+      { nombre: "águila", letra: "A", imagen: "figura6.jpg" },
+      { nombre: "elefante", letra: "E", imagen: "figura7.jpg" },
+      { nombre: "uva", letra: "U", imagen: "figura8.jpg" },
+      { nombre: "iguana", letra: "I", imagen: "figura9.jpg" },
+      { nombre: "árbol", letra: "A", imagen: "figura10.jpg" },
+      { nombre: "espada", letra: "E", imagen: "figura11.jpg" },
+      { nombre: "avión", letra: "A", imagen: "figura12.jpg" },
+      { nombre: "uno", letra: "U", imagen: "figura13.jpg" },
+      { nombre: "ojos", letra: "O", imagen: "figura14.jpg" },
+      { nombre: "impresora", letra: "I", imagen: "figura15.jpg" },
+      { nombre: "auto", letra: "A", imagen: "figura16.jpg" },
+      { nombre: "escalera", letra: "E", imagen: "figura17.jpg" },
+      { nombre: "iglesia", letra: "I", imagen: "figura18.jpg" },
+      { nombre: "oveja", letra: "O", imagen: "figura19.jpg" },
+      { nombre: "ukelele", letra: "U", imagen: "figura20.jpg" },
+      { nombre: "escarapela", letra: "E", imagen: "figura21.jpg" },
+      { nombre: "ocho", letra: "O", imagen: "figura22.jpg" },
+      { nombre: "araña", letra: "A", imagen: "figura23.jpg" },
+      { nombre: "empanada", letra: "E", imagen: "figura24.jpg" },
+      { nombre: "imán", letra: "I", imagen: "figura25.jpg" },
+      { nombre: "iglú", letra: "I", imagen: "figura26.jpg" },
+      { nombre: "uña", letra: "U", imagen: "figura27.jpg" },
+      { nombre: "urraca", letra: "U", imagen: "figura28.jpg" },
+      { nombre: "oruga", letra: "O", imagen: "figura29.jpg" }
+    ];
+
+let juegoTerminadoPorTiempo = false;
+let giroEnCurso = false;
+let esperandoRespuesta = false;
+let mensajeMostradoPorTiempo = false;
+
+let score = 0;
+let time = 180;
+let tiempoInterno = time;
+let timerInterval;
+
+
+
+    let palabrasDisponibles = [...palabrasOriginales];
+    let palabrasMezcladas = [];
+    let posImg = 0, posNum = 0;
+    const numeros = Array.from({ length: 100 }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+    const repeticiones = 10;
+    let palabraEsperada = null, palabraActual = null, puntosEnJuego = 0;
+
+    const reelImagenes = document.getElementById("reelImagenes");
+    const reelNumeros = document.getElementById("reelNumeros");
+    const container = document.querySelector(".container");
+    const girarBtn = document.getElementById("girar-btn"); // ✅ ahora accesible globalmente
+
+
+    function normalizarLetra(letra) {
+      return letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    }
+
+    function mezclar(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function inicializarReelImagenes() {
+      palabrasMezcladas = mezclar(palabrasDisponibles);
+      reelImagenes.innerHTML = "";
+      for (let i = 0; i < palabrasMezcladas.length * repeticiones; i++) {
+        const img = document.createElement("img");
+        img.src = `image/${palabrasMezcladas[i % palabrasMezcladas.length].imagen}`;
+        img.className = "symbol";
+        reelImagenes.appendChild(img);
+      }
+    }
+
+    function inicializarReelNumeros() {
+      reelNumeros.innerHTML = "";
+      for (let i = 0; i < numeros.length * repeticiones; i++) {
+        const div = document.createElement("div");
+        div.className = "digit";
+        div.textContent = numeros[i % numeros.length];
+        reelNumeros.appendChild(div);
+      }
+    }
+
+
+function girar() {
+  if (palabrasDisponibles.length === 0 || juegoTerminadoPorTiempo || container.classList.contains("disable-clicks") || giroEnCurso) return;
+
+  girarBtn.disabled = true;
+  esperandoRespuesta = true;
+  container.classList.add("disable-clicks");
+
+  inicializarReelImagenes();
+
+  const destinoPalabra = Math.floor(Math.random() * palabrasMezcladas.length);
+  const destinoNum = Math.floor(Math.random() * numeros.length);
+
+  const vueltasImg = Math.floor(Math.random() * 5) + 5;
+  const vueltasNum = Math.floor(Math.random() * 3) + 1;
+
+  const totalMovImg = vueltasImg * palabrasMezcladas.length + destinoPalabra;
+  const totalMovNum = vueltasNum * numeros.length + destinoNum;
+
+  posImg = (posImg + totalMovImg) % (palabrasMezcladas.length * repeticiones);
+  posNum = (posNum + totalMovNum) % (numeros.length * repeticiones);
+
+  reelImagenes.style.transition = `transform ${totalMovImg * 0.05}s ease-out`;
+  reelImagenes.style.transform = `translateY(-${posImg * 100}px)`;
+
+  reelNumeros.style.transition = `transform ${totalMovNum * 0.05}s ease-out`;
+  reelNumeros.style.transform = `translateY(-${posNum * 100}px)`;
+
+  setTimeout(() => {
+    const palabra = palabrasMezcladas[posImg % palabrasMezcladas.length];
+    const numero = numeros[posNum % numeros.length];
+
+  if (tiempoInterno === 0) {
+  // Detenemos cualquier intento de continuar el juego y mostramos el mensaje final
+  juegoTerminadoPorTiempo = true;
+  showMessagexTiempo();
+  return;
+}
+
+if (tiempoInterno < 10) {
+  tiempoInterno += (10 - tiempoInterno);
+}
+
+    reproducirMensajeAudio(palabra.nombre.toLowerCase(), numero);
+
+    palabraEsperada = palabra.letra;
+    puntosEnJuego = numero;
+
+    reelImagenes.style.transition = "none";
+    reelNumeros.style.transition = "none";
+
+    const imagenVisible = reelImagenes.children[(posImg % palabrasMezcladas.length)];
+    imagenVisible.style.cursor = "pointer";
+
+    const reproducirPalabra = () => {
+      new Audio(`sounds/palabras/${palabra.nombre.toLowerCase()}.mp3`).play().catch(() => {});
+    };
+
+    imagenVisible.addEventListener("click", reproducirPalabra);
+
+    palabraActual = { ...palabra, elemento: imagenVisible, listener: reproducirPalabra };
+
+    reelImagenes.style.transform = `translateY(-${(posImg % palabrasMezcladas.length) * 100}px)`;
+    reelNumeros.style.transform = `translateY(-${(posNum % numeros.length) * 100}px)`;
+
+    palabrasDisponibles = palabrasDisponibles.filter(p => p.imagen !== palabra.imagen);
+    letraYaSeleccionada = false;
+
+    // ✅ Activar botones de letras después de 8 segundos
+    setTimeout(() => {
+      botonesLetras.classList.add("hover-enabled");
+      container.classList.remove("disable-clicks");
+    }, 8000);
+  }, Math.max(totalMovImg, totalMovNum) * 50 + 100);
+}
+
+
+
+function showTemporaryMessage(text, type = "info") {
+  const message = document.createElement("div");
+  message.className = "found-message";
+
+  if (type === "correct") {
+    message.classList.add("correct");
+  } else if (type === "error") {
+    message.classList.add("error");
+  } else {
+    // Para mensajes genéricos (info), si quieres puedes agregar una clase o dejar así
+    // Aquí dejo sin clase extra, se aplican estilos base de .found-message
+  }
+
+  message.textContent = text;
+  document.body.appendChild(message);
+
+  // Asegura que el mensaje esté visible sobre todo
+  message.style.zIndex = 9999;
+
+  // Bloquea clicks en el container y deshabilita hover en letras mientras se muestra mensaje
+  container.classList.add("disable-clicks");
+  botonesLetras.classList.remove("hover-enabled");
+
+  // Después de 5 segundos elimina el mensaje y desbloquea clicks y hover
+  setTimeout(() => {
+    message.remove();
+    container.classList.remove("disable-clicks");
+  }, 5000);
+}
+
+
+function seleccionarLetra(letra) {
+  if (!palabraEsperada || letraYaSeleccionada) return;
+
+  letraYaSeleccionada = true;
+  esperandoRespuesta = false;
+
+  botonesLetras.classList.remove("hover-enabled");
+
+  const letraCorrecta = palabraEsperada.toUpperCase();
+  const palabraNombre = palabraActual.nombre.toLowerCase();
+
+  // ✅ Desactiva el click sobre la imagen visible
+  if (palabraActual && palabraActual.elemento && palabraActual.listener) {
+    palabraActual.elemento.removeEventListener("click", palabraActual.listener);
+    palabraActual.elemento.style.cursor = "default";
+  }
+
+  if (normalizarLetra(letra) === normalizarLetra(palabraEsperada)) {
+    score += puntosEnJuego;
+    document.getElementById("puntaje").textContent = `Puntaje: ${score}`;
+    document.getElementById("audio-correcto").play();
+    showTemporaryMessage("¡CORRECTO!", "correct");
+
+    setTimeout(() => {
+  if (!juegoTerminadoPorTiempo) {
+    girarBtn.disabled = false;
+  }
+}, 5000);
+  } else {
+        container.classList.add("disable-clicks");
+
+if (tiempoInterno === 0) {
+  // Detenemos cualquier intento de continuar el juego y mostramos el mensaje final
+  juegoTerminadoPorTiempo = true;
+  showMessagexTiempo();
+  return;
+}
+
+if (tiempoInterno < 10) {
+  tiempoInterno += (10 - tiempoInterno);
+}
+
+
+    document.getElementById("audio-error").play();
+    showTemporaryMessage("ERROR", "error");
+
+    setTimeout(() => {
+      const mensajeTexto = `
+        <div style="font-size: 18px;">
+        INCORRECTO. LA PALABRA 
+        <span style="font-size: 18px; font-weight: bold; color: blue;">"${palabraActual.nombre.toUpperCase()}"</span>,<br> 
+        EMPIEZA CON LA LETRA 
+        <span style="font-size: 18px; font-weight: bold; color: blue;">"${letraCorrecta}"</span>.
+        </div>
+      `;
+
+      const mensaje = document.createElement("div");
+      mensaje.className = "found-message";
+      mensaje.innerHTML = mensajeTexto;
+      document.body.appendChild(mensaje);
+
+      setTimeout(() => {
+        mensaje.remove();
+      }, 8000);
+
+      const secuencia = [
+        `sounds/msjincorrecto.mp3`,
+        `sounds/palabras/${palabraNombre}.mp3`,
+        `sounds/empezaba.mp3`,
+        `sounds/${letraCorrecta}.mp3`
+      ];
+
+      let index = 0;
+      function reproducirSiguiente() {
+        if (index >= secuencia.length) return;
+        const audio = new Audio(secuencia[index]);
+        index++;
+        audio.addEventListener("ended", reproducirSiguiente);
+        audio.play().catch(() => {});
+      }
+
+      reproducirSiguiente();
+    }, 2000);
+
+    // ✅ Esperar 10 segundos para reiniciar
+    setTimeout(() => {
+      container.classList.remove("disable-clicks");
+      girarBtn.disabled = false;
+      palabraEsperada = null;
+      palabraActual = null;
+      puntosEnJuego = 0;
+      document.getElementById("mensaje").textContent = "";
+    }, 10000);
+  }
+}
+
+
+
+function fadeOutMusic(audioElement, duration) {
+    let volume = audioElement.volume;
+    let fadeInterval = 50;
+    let fadeStep = volume / (duration * 1000 / fadeInterval);
+
+    let fadeOut = setInterval(function() {
+      if (volume > 0) {
+        volume -= fadeStep;
+        if (volume < 0) volume = 0;
+        audioElement.volume = volume;
+      } else {
+        clearInterval(fadeOut);
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      }
+    }, fadeInterval);
+  }
+
+
+
+function showMessagexTiempo() {
+  if (mensajeMostradoPorTiempo) return; // ✅ ya fue ejecutado
+  mensajeMostradoPorTiempo = true;      // ✅ marcamos como mostrado
+
+  fadeOutMusic(audio, 4);
+
+  setTimeout(() => {
+    const message = document.createElement("div");
+    message.classList.add("found-message");
+
+    message.innerHTML = `
+      <div style="font-weight: bold; font-size: 32px;">¡FIN DEL JUEGO!</div>
+      <div style="font-size: 24px;">Tu tiempo se ha agotado.</div>
+    `;
+
+    document.body.appendChild(message);
+    document.body.classList.add("disable-clicks");
+
+    const audioTiempo = new Audio("sounds/finportiempo.mp3");
+    audioTiempo.play();
+
+    setTimeout(() => {
+      endGame();
+      window.location.href = "out.html";
+    }, 7000);
+  }, 2000);
+}
+
+
+
+function endGame() {
+    const currentDate = new Date().toLocaleDateString();
+    const userData = {
+        fecha: currentDate,
+        usuario: localStorage.getItem("ActualUs"),
+        puntaje: score,
+        juegonumero: incrementGameNumber(),
+        game: "AEI_trgmnds", // ← este es tu nuevo código
+        rutina: localStorage.getItem("rutina")
+    };
+
+    // Guardar en el historial de juegos
+    const gamesHistory = JSON.parse(localStorage.getItem("gamesHistory")) || [];
+    gamesHistory.push(userData);
+    localStorage.setItem("gamesHistory", JSON.stringify(gamesHistory));
+
+    // Actualizar puntaje acumulado
+    updateAcumulado(score);
+}
+
+function updateAcumulado(scoreToAdd) {
+    let acumulado = parseInt(localStorage.getItem("acumulado")) || 0;
+    acumulado += scoreToAdd;
+    localStorage.setItem("acumulado", acumulado);
+}
+
+function incrementGameNumber() {
+    let gameNumber = parseInt(localStorage.getItem("gameNumber")) || 0;
+    gameNumber++;
+    localStorage.setItem("gameNumber", gameNumber);
+    return gameNumber;
+}
+
+function almacenarRegistroConZ(finalScore) {
+    const juegonumero = localStorage.getItem("gameNumber") || 1;
+    const fechaActual = new Date().toLocaleDateString();
+    const usuario = localStorage.getItem("ActualUs") || "Desconocido";
+    const acumulado = localStorage.getItem("acumulado") || 0;
+    const rutina = localStorage.getItem("rutina") || "No disponible";
+
+    const registro = {
+        juegoZ: `Juego ${juegonumero}Z`,
+        fecha: fechaActual,
+        usuario: usuario,
+        acumulado: acumulado,
+        rutina: rutina
+    };
+
+    localStorage.setItem(`registroConZ-${Date.now()}`, JSON.stringify(registro));
+    console.log("Registro almacenado con Z:", registro);
+}
+
+
+
+let audio;
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("actualUsername").textContent =
+        `Usuario: ${localStorage.getItem("ActualUs")}`;
+      inicializarReelImagenes();
+      inicializarReelNumeros();
+
+      audio = document.getElementById("background-music");
+
+      const reloj = document.getElementById("reloj");
+      const puntaje = document.getElementById("puntaje");
+
+
+
+      function updateDisplay() {
+        reloj.textContent = `Tiempo: ${String(Math.floor(time / 60)).padStart(2, "0")}:${String(time % 60).padStart(2, "0")}`;
+        puntaje.textContent = `Puntaje: ${score}`;
+      }
+
+
+
+
+function startTimer() {
+  tiempoInterno = time; // sincroniza solo una vez al iniciar
+
+  const reloj = document.getElementById("reloj");
+
+  timerInterval = setInterval(() => {
+    if (time > 0) {
+      time--; // ← Solo decrementa si aún hay tiempo
+    }
+
+    if (tiempoInterno > 0) {
+      tiempoInterno--; // ← Este controla si se termina el juego
+    }
+
+    // ⏱️ Actualizar el reloj visible solo si time es 0 o mayor
+    reloj.textContent = `Tiempo: ${String(Math.floor(Math.max(0, time) / 60)).padStart(2, "0")}:${String(Math.max(0, time) % 60).padStart(2, "0")}`;
+
+    // Cuando el tiempo interno llega a cero, finaliza el juego
+if (tiempoInterno <= 0) {
+  clearInterval(timerInterval);
+  juegoTerminadoPorTiempo = true;
+
+  // Estas líneas son suficientes:
+  girarBtn.disabled = true;
+girarBtn.classList.add("bloqueado-final"); // Opcional para estilo extra
+  botonesLetras.classList.remove("hover-enabled");
+botonesLetras.classList.add("bloqueado-final"); // También opcional
+  container.classList.add("disable-clicks");
+
+      // Detener animaciones inmediatamente
+      reelImagenes.style.transition = "none";
+      reelNumeros.style.transition = "none";
+
+      // Fijar posición actual
+      reelImagenes.style.transform = `translateY(-${(posImg % palabrasMezcladas.length) * 100}px)`;
+      reelNumeros.style.transform = `translateY(-${(posNum % numeros.length) * 100}px)`;
+
+      giroEnCurso = false;
+      showMessagexTiempo();
+    }
+  }, 1000);
+}
+
+
+
+
+
+
+
+document.getElementById("start-button").addEventListener("click", () => {
+  document.getElementById("start-button-container").style.display = "none";
+  container.style.display = "block";
+  audio.play();
+  startTimer();
+});
+
+      indicacion.addEventListener("mouseenter", () => {
+        const texto = indicacion.textContent.trim();
+        if (!texto) return;
+        new Audio(`sounds/${texto}.mp3`).play().catch(() => {});
+      });
+    });
+
+
+function reproducirMensajeAudio(palabraNombre, numero) {
+  const secuencia = [
+    `sounds/conqueempieza.mp3`,
+    `sounds/palabras/${palabraNombre}.mp3`,
+    `sounds/contestapor.mp3`,
+    `sounds/numeros/${numero}.mp3`,
+    numero === 1 ? `sounds/punto.mp3` : `sounds/puntos.mp3`
+  ];
+
+  let index = 0;
+
+  function reproducirSiguiente() {
+    if (index >= secuencia.length) return;
+
+    const audio = new Audio(secuencia[index]);
+    index++;
+    audio.addEventListener("ended", reproducirSiguiente);
+    audio.play().catch(() => {});
+  }
+
+  reproducirSiguiente();
+}
+
+</script>
+</body>
+</html>
