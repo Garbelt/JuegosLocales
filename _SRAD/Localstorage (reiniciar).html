@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar datos del localStorage</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <button id="borrarDatos">Borrar datos del LocalStorage</button>
+
+    <script>
+        document.getElementById('borrarDatos').addEventListener('click', function() {
+            localStorage.clear();
+            alert('¡Los datos del LocalStorage han sido eliminados!');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRAD - Sistema de Registro y Almacenamiento de Datos</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+     .action-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .action-button {
+            margin: 0 5px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h2>SRAD - Sistema de Registro y Almacenamiento de Datos</h2>
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th></th> <!-- Columna de margen izquierdo -->
+                    <th>Usuario</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="usersList"></tbody>
+        </table>
+	<br>
+        <button id="deleteAllButton">Eliminar Todos</button>
+    </div>
+
+    <script src="srad.js"></script>
+</body>
+</html>

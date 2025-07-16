@@ -1,0 +1,35 @@
+/* Segundo bloque de código CSS */
+.container {
+    max-width: 600px; /* Ajustar el ancho del contenedor */
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center; /* Centrar el contenido */
+}
+
+#usersTable {
+    margin: 0 auto;
+    width: 100%; /* Ajustar el ancho de la tabla */
+    border-collapse: collapse; /* Combinar bordes de celda */
+}
+
+#usersTable th,
+#usersTable td {
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Ajustar las columnas */
+#usersTable th:first-child,
+#usersTable td:first-child {
+    display: none; /* Ocultar la primera columna */
+}
+
+#usersTable th:nth-child(2),
+#usersTable td:nth-child(2) {
+    width: 70%; /* Ancho de la primera columna */
+    text-align: left; /* Alinear texto a la izquierda */
+}
+
+#usersTab

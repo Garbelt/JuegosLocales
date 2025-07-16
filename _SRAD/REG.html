@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos de Usuarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 20px;
+            width: 50%;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 10%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 30%;
+            text-align: left;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 25%;
+            text-align: left;
+        }
+
+        th:nth-child(5), td:nth-child(5) {
+            width: 15%;
+        }
+
+        .title-line1 {
+            font-size: 24px;
+            text-align: center;
+            grid-column: span 5;
+        }
+
+        .title-line2 {
+            font-size: 12px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            margin: 0 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <center><h1 class="title-line1">JUEGOS DE: <span id="username-title"></span></h1></center>
+        <table id="games-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Juego</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="games-history"></tbody>
+        </table>
+        <br>
+        <div class="button-container">
+            <button id="generate-excel">Generar Excel</button>
+            <button id="asrad">Volver a SRAD</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            const usernameTitleElement = document.getElementById("username-title");
+
+            if (!username) {
+                const historyElement = document.getElementById("games-history");
+                historyElement.innerHTML = "<tr><td colspan='5'>Error: No se proporcionó un nombre de usuario.</td></tr>";
+            } else {
+                usernameTitleElement.textContent = username;
+                let gamesHistory = [];
+                try {
+                    gamesHistory = JSON.parse(localStorage.getItem("gamesHistory")) || [];
+                    if (!Array.isArray(gamesHistory)) {
+                        gamesHistory = [];
+                    }
+                } catch (error) {
+                    gamesHistory = [];
+                }
+                const userGames = gamesHistory.filter(game => game.usuario === username);
+                
+                if (userGames.length > 0) {
+                    userGames.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+                    const tbody = document.getElementById("games-history");
+                    userGames.forEach((game, index) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${game.fecha}</td>
+                            <td>${game.usuario}</td>
+                            <td>${game.game}</td>
+                            <td>${game.puntaje}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                    document.querySelector(".title-line1").textContent = `JUEGOS DE: ${username}`;
+                } else {
+                    const historyElement = document.getElementById("games-history");
+                    historyElement.innerHTML = "<tr><td colspan='5'>No hay registros de juegos para este usuario.</td></tr>";
+                }
+            }
+
+            document.getElementById("asrad").addEventListener("click", function() {
+                window.location.href = "srad.html";
+            });
+
+            function generateExcel() {
+                const currentDate = new Date().toISOString().slice(0,10);
+                const fileName = username ? `${currentDate}_${username}.xls` : `${currentDate}.xls`;
+                const tableContent = document.getElementById('games-table').outerHTML;
+                const excelData = `
+                    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+                          xmlns:x="urn:schemas-microsoft-com:office:excel"
+                          xmlns="http://www.w3.org/TR/REC-html40">
+                    <head>
+                        <meta charset="UTF-8">
+                        <!--[if gte mso 9]>
+                        <xml>
+                            <x:ExcelWorkbook>
+                                <x:ExcelWorksheets>
+                                    <x:ExcelWorksheet>
+                                        <x:Name>Hoja1</x:Name>
+                                        <x:WorksheetOptions>
+                                            <x:DisplayGridlines/>
+                                        </x:WorksheetOptions>
+                                    </x:ExcelWorksheet>
+                                </x:ExcelWorksheets>
+                            </x:ExcelWorkbook>
+                        </xml>
+                        <![endif]-->
+                    </head>
+                    <body>
+                        <table>
+                            <tr>
+                                <td colspan="5"><h1 style="font-size:24px; text-align:center;">INFORME DE ${username}</h1></td>
+                            </tr>
+                            <tr></tr>
+                            ${tableContent}
+                        </table>
+                    </body>
+                    </html>
+                `;
+
+                const blob = new Blob([excelData], { type: 'application/vnd.ms-excel' });
+                saveAs(blob, fileName);
+            }
+
+            document.getElementById("generate-excel").addEventListener("click", generateExcel);
+        });
+    </script>
+</body>
+</html>

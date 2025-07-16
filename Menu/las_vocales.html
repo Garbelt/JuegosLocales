@@ -1,0 +1,47 @@
+﻿    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Temas - AFINANDO CONOCIMIENTOS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Menú de Temas</h2>
+        <ul id="mainMenu">
+
+
+
+
+            <li><button class="themeButton" onclick="showSubMenu()">LAS VOCALES</button></li>
+
+
+        </ul>
+        <!-- Aquí cargaremos el submenú desde otro archivo -->
+        <div id="subMenuContainer"></div>
+        <button id="backtoareaButton" onclick="goToAreaMenu()">Volver al Inicio</button>
+        <button id="exitButton" onclick="exit()">Salir</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Función para redirigir al usuario al menu de areas (areas.html)
+        function goToAreaMenu() {
+            window.location.href = '../index.html';
+        }
+
+        // Función para redirigir al usuario a la página de salida (salir.html)
+        function exit() {
+            window.location.href = 'salir.html';
+        }
+
+        // Función para redirigir al usuario a la página del Juego
+        function showSubMenu() {
+            window.location.href = '../Juegos/las_vocales/_Catalogo.html';
+        }
+
+
+    </script>
+</body>
+</html>
+
+
+
