@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Juego de Alfabetización</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .container {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+      border: 2px solid #333;
+    }
+
+    #start-button-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    #start-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    .found-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #8ec6e6;
+      color: black;
+      padding: 20px;
+      border: 2px solid #333;
+      font-size: 24px;
+      z-index: 9999;
+      text-align: center;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .disable-clicks {
+      pointer-events: none;
+    }
+
+    #vowel-table td {
+      width: 80px;
+      height: 80px;
+      font-size: 32px;
+      text-align: center;
+      vertical-align: middle;
+      border: 2px solid #333;
+      cursor: pointer;
+    }
+
+    .correct {
+      background-color: #a8e6a1;
+    }
+
+    .incorrect {
+      background-color: #f2a8a8;
+    }
+
+    .audio-cell {
+      background-color: #f0f0f0;
+    }
+
+    /* Estilo para la imagen animada en el centro al mostrar pista */
+    #hint-container {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    #hint-container img {
+      width: 100px;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="start-button-container">
+    <button id="start-button">COMENZAR EL JUEGO</button>
+  </div>
+
+  <div class="container">
+    <table>
+      <tr>
+        <td colspan="2" style="text-align: center;">
+          <b>¿CUÁL ES LA LETRA...?</b><br>
+          Vocales
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align: center;">
+          <div id="game-content">
+            <!-- Juego de selección de vocales -->
+            <div id="vowel-table-container">
+              <table id="vowel-table">
+                <tr>
+                  <td id="cell-0"></td>
+                  <td id="cell-1"></td>
+                  <td id="cell-2"></td>
+                </tr>
+                <tr>
+                  <td id="cell-3"></td>
+                  <td id="cell-4"></td>
+                  <td id="cell-5" class="audio-cell">🔊</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </td>
+        <td style="vertical-align: top;">
+          <div id="panel">
+            <div id="actualUsername"></div>
+            <div id="reloj">Tiempo: 00:00</div>
+            <div id="intentos">Intentos: 0</div>
+            <div id="puntaje">Puntaje: 0</div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Contenedor para la imagen animada con la letra correcta -->
+  <div id="hint-container">
+    <img id="hint-image" src="" alt="Letra correcta" />
+  </div>
+
+  <div id="mensaje-temporal" class="found-message" style="display: none;"></div>
+
+  <audio id="audio-intento" src="sounds/finportiempo.mp3"></audio>
+  <audio id="audio-error" src="sounds/error.mp3"></audio>
+  <audio id="audio-perdiste" src="sounds/finporintentos.mp3"></audio>
+  <audio id="audio-correcto" src="sounds/correcto.mp3"></audio>
+  <audio id="audio-fin" src="sounds/finporcompletar.mp3"></audio>
+
+  <audio id="background-music" loop>
+    <source src="sounds/El gran Puzzle [1].mp3" type="audio/mpeg" />
+    Tu navegador no soporta la reproducción de audio.
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
