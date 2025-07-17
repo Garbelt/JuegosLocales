@@ -327,7 +327,7 @@ function showHint(letter) {
 
 
 function playSound(vowel) {
-  const vowelAudio = new Audio(`sounds/señalar ${vowel}.mp3`);
+  const vowelAudio = new Audio(`sounds/Señalar ${vowel}.mp3`);
   vowelAudio.play().catch((e) => console.error("Error al reproducir el sonido:", e));
 }
 
