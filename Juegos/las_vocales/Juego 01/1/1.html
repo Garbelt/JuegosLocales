@@ -114,13 +114,15 @@
       pointer-events: none;
     }
 
-    /* En pantallas más pequeñas que 450px, el container toma casi todo el ancho */
-@media (max-width: 450px) {
-    .container {
-        width: 95%;      /* casi todo el ancho disponible */
-        max-width: 400px; /* para no crecer más allá de 400px */
-    }
+@media (max-width: 650px) {
+  .container {
+    width: 95%;
+    max-width: 600px;
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+  }
 }
+
   </style>
 </head>
 <body>
