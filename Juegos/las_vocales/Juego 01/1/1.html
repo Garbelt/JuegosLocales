@@ -18,6 +18,7 @@
     .container {
       display: none;
       max-width: 800px;
+      aspect-ratio: 4 / 3;  /* proporción 
       margin: 0 auto;
       border: 2px solid #333;
     }
@@ -114,12 +115,21 @@
       pointer-events: none;
     }
 
+/* Para pantallas más pequeñas (modo retrato, móviles) */
 @media (max-width: 650px) {
+  html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* evita scroll */
+  }
+
   .container {
-    width: 95%;
-    max-width: 600px;
-    aspect-ratio: 4 / 3;
-    margin: 0 auto;
+    height: 95vh;                /* usa casi toda la altura */
+    aspect-ratio: 9 / 16;        /* más alto que ancho */
+    width: auto;                 /* se calcula automáticamente */
+    max-width: 100vw;            /* evita pasarse del ancho */
+    margin: auto;
   }
 }
 
