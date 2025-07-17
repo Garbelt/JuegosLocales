@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TABLA GENERAL DE PUNTAJES DE JUEGOS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 20px;
+            width: 50%;
+            overflow-x: auto;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .recent-container {
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            display: inline-block;
+            padding: 20px;
+            width: 50%;
+            overflow-x: auto;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 10%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 50%;
+            text-align: left;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            width: 15%;
+        }
+
+        .title-line1 {
+            font-size: 24px;
+        }
+
+        .title-line2 {
+            font-size: 12px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: red;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .button {
+            width: calc(15% - 10px);
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #outButton {
+            background-color: #3344db;
+            color: #fff;
+        }
+
+        #continueButton {
+            background-color: #3498db;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <center>
+            <h1 class="title-line1">TABLA GENERAL DE PUNTAJES</h1>
+            <h2 id="routine-title" class="title-line2">JUEGOS SOBRE: Las Vocales</h2>
+        </center>
+        <table id="games-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="games-history"></tbody>
+        </table>
+    </div>
+
+    <div id="recent-container" class="recent-container" style="display: none;">
+        <center>
+            <h2 class="title-line2">TU PUNTAJE</h2>
+        </center>
+        <table id="recent-game-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Puntaje</th>
+                </tr>
+            </thead>
+            <tbody id="recent-game-history"></tbody>
+        </table>
+    </div>
+
+    <div class="button-container">
+        <button id="continueButton" class="button">Continuar</button>
+    </div>
+
+    <script>
+        // Definición de la función almacenarRegistroConZ
+        function almacenarRegistroConZ(finalScore) {
+            const juegonumero = localStorage.getItem("juegonumero") || 1;
+            const fechaActual = new Date().toLocaleDateString();
+            const usuario = localStorage.getItem("ActualUs") || "Desconocido";
+            const acumulado = localStorage.getItem("acumulado") || 0;
+            const rutina = localStorage.getItem("rutina") || "No disponible";
+
+            const registro = {
+                juegoZ: `Juego ${juegonumero}Z`,
+                fecha: fechaActual,
+                usuario: usuario,
+                acumulado: acumulado,
+                rutina: rutina
+            };
+
+            localStorage.setItem(`registroConZ-${Date.now()}`, JSON.stringify(registro));
+            console.log("Registro almacenado con Z:", registro);
+
+            localStorage.setItem("habilitar", "N");
+        }
+
+        // Ejecutar al cargar la página
+        document.addEventListener("DOMContentLoaded", () => {
+            const habilitar = localStorage.getItem("habilitar");
+
+            if (habilitar === "Y") {
+                const finalScore = 100; // Puedes ajustarlo si es necesario
+                almacenarRegistroConZ(finalScore);
+            }
+
+            const tableBody = document.querySelector("#games-history");
+            const keys = Object.keys(localStorage).filter(key => key.startsWith("registroConZ-"));
+            const rutinaActual = localStorage.getItem("rutina") || "No disponible";
+
+
+            // Filtrar y ordenar registros por rutina
+            const registros = keys
+                .map(key => JSON.parse(localStorage.getItem(key)))
+                .filter(record => record.rutina === rutinaActual);
+
+            if (registros.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='4'>No hay historial disponible para esta rutina.</td></tr>";
+                return;
+            }
+
+            registros.sort((a, b) => parseInt(b.acumulado) - parseInt(a.acumulado));
+            const mejoresRegistros = registros.slice(0, 5);
+
+            mejoresRegistros.forEach((record, index) => {
+                const row = document.createElement("tr");
+
+                const cellOrden = document.createElement("td");
+                cellOrden.textContent = index + 1;
+                row.appendChild(cellOrden);
+
+                const cellFecha = document.createElement("td");
+                cellFecha.textContent = record.fecha || "No disponible";
+                row.appendChild(cellFecha);
+
+                const cellUsuario = document.createElement("td");
+                cellUsuario.textContent = record.usuario || "No disponible";
+                row.appendChild(cellUsuario);
+
+                const cellAcumulado = document.createElement("td");
+                cellAcumulado.textContent = record.acumulado || "No disponible";
+                row.appendChild(cellAcumulado);
+
+                tableBody.appendChild(row);
+            });
+        });
+
+            // Proporcionar un botón para continuar
+            document.getElementById("continueButton").addEventListener("click", function() {
+                window.location.href = '../1/1.html'; // Reemplaza con la URL correspondiente
+            });
+
+    </script>
+</body>
+</html>
